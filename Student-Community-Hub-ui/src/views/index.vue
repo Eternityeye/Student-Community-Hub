@@ -16,7 +16,7 @@
         <div class="stat-icon"><i class="el-icon-user-solid"></i></div>
         <div class="stat-content">
           <div class="stat-label">用户名</div>
-          <div class="stat-value">{{ userInfo.userName || '-' }}</div>
+          <div class="stat-value">{{ userName || '-' }}</div>
         </div>
       </div>
       <div class="stat-card cyan">
@@ -69,7 +69,7 @@
             <i class="el-icon-monitor"></i>
             <span>服务监控</span>
           </div>
-          <div class="action-item" @click="$router.push('/system/user/profile')">
+          <div class="action-item" @click="$router.push('/user/profile')">
             <i class="el-icon-user-solid"></i>
             <span>个人中心</span>
           </div>
@@ -96,7 +96,7 @@
           </div>
           <div class="info-row">
             <span class="info-key">登录账号</span>
-            <span class="info-val">{{ userInfo.userName }}</span>
+            <span class="info-val">{{ userInfo.name }}</span>
           </div>
         </div>
       </div>

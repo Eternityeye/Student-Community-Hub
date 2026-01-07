@@ -26,9 +26,12 @@
 18. 连接池监视：监视当前系统数据库连接池状态，可进行分析SQL找出系统性能瓶颈。
 
 ## 项目细节
-Student-Community-Hub-app包为uniapp编写的用户端代码
+- Student-Community-Hub-app包为uniapp编写的用户端代码
+- Student-Community-Hub-ui包为vue2编写的管理端代码
+-mysql文件在sql文件夹内
 
-Student-Community-Hub-ui包为vue2编写的管理端代码
+## 项目功能
+待补充...
 ## 相关账号：
 
 - 超级管理员 admin/admin123  
