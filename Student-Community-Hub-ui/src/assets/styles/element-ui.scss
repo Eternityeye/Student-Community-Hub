@@ -90,3 +90,31 @@
   .el-submenu__icon-arrow {
   display: none;
 }
+
+// global dialog styles
+.el-dialog__wrapper {
+  .el-dialog {
+    border-radius: 8px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .el-dialog__header {
+    padding: 24px 24px 0;
+    border-bottom: none;
+  }
+
+  .el-dialog__body {
+    padding: 0 24px 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .el-dialog__title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #303133;
+    line-height: 1.4;
+  }
+}
