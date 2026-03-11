@@ -16,7 +16,7 @@
         <div class="stat-icon"><i class="el-icon-user-solid"></i></div>
         <div class="stat-content">
           <div class="stat-label">用户名</div>
-          <div class="stat-value">{{ userName || '-' }}</div>
+          <div class="stat-value">{{ nickName || '-' }}</div>
         </div>
       </div>
       <div class="stat-card cyan">
@@ -117,36 +117,18 @@
       </div>
     </div>
 
-    <el-dialog
-      :visible.sync="noticeDialogVisible"
-      width="800px"
-      top="8vh"
-      custom-class="notice-dialog">
-      <div slot="title" class="dialog-title-wrapper">
-        <span class="dialog-title">{{ noticeDetail.noticeTitle }}</span>
-      </div>
-      <div class="dialog-meta">
-        <span class="meta-item">
-          <i class="el-icon-user"></i>
-          {{ noticeDetail.createBy }}
-        </span>
-        <span class="meta-item">
-          <i class="el-icon-time"></i>
-          {{ noticeDetail.createTime }}
-        </span>
-      </div>
-      <div class="dialog-divider"></div>
-      <div class="dialog-content" v-html="noticeDetail.noticeContent"></div>
-    </el-dialog>
+    <notice-view-dialog :show.sync="noticeDialogVisible" :detail="noticeDetail" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { listNotice, getNotice } from '@/api/system/notice'
+import NoticeViewDialog from '@/components/NoticeViewDialog'
 
 export default {
   name: 'Index',
+  components: { NoticeViewDialog },
   data() {
     return {
       greeting: '',
@@ -221,7 +203,7 @@ export default {
 
 <style scoped lang="scss">
 .welcome-container {
-  min-height: 100vh;
+  min-height: calc(100vh - 50px);
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
   padding: 24px;
   box-sizing: border-box;
@@ -472,72 +454,6 @@ export default {
   color: #909399;
   font-size: 14px;
   padding: 20px 0;
-}
-
-::v-deep .notice-dialog {
-  .el-dialog__body {
-    height: calc(85vh - 120px) !important;
-    flex: none !important;
-  }
-}
-
-.dialog-meta {
-  display: flex;
-  gap: 24px;
-  padding: 16px 0;
-  color: #909399;
-  font-size: 14px;
-
-  .meta-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    i {
-      font-size: 14px;
-    }
-  }
-}
-
-.dialog-divider {
-  height: 1px;
-  background: #e4e7ed;
-  margin-bottom: 20px;
-}
-
-.dialog-content {
-  font-size: 15px;
-  line-height: 1.8;
-  color: #606266;
-  min-height: 100px;
-
-  ::v-deep img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    margin: 16px 0;
-  }
-
-  ::v-deep p {
-    margin: 12px 0;
-  }
-
-  ::v-deep h1, ::v-deep h2, ::v-deep h3 {
-    margin: 20px 0 12px;
-    color: #303133;
-  }
-
-  ::v-deep ul, ::v-deep ol {
-    padding-left: 24px;
-    margin: 12px 0;
-  }
-
-  ::v-deep code {
-    background: #f5f7fa;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-family: monospace;
-  }
 }
 
 @media (max-width: 1024px) {

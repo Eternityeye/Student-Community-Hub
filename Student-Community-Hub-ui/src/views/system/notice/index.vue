@@ -99,6 +99,12 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-view"
+            @click="handleView(scope.row)"
+          >查看</el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:notice:edit']"
@@ -121,6 +127,9 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+
+    <!-- 查看公告对话框 -->
+    <notice-view-dialog :show.sync="viewOpen" :detail="viewDetail" />
 
     <!-- 添加或修改公告对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body>
@@ -171,9 +180,11 @@
 
 <script>
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice"
+import NoticeViewDialog from "@/components/NoticeViewDialog"
 
 export default {
   name: "Notice",
+  components: { NoticeViewDialog },
   dicts: ['sys_notice_status', 'sys_notice_type'],
   data() {
     return {
@@ -195,6 +206,9 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      // 查看弹窗
+      viewOpen: false,
+      viewDetail: {},
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -297,6 +311,13 @@ export default {
         }
       })
     },
+    /** 查看按钮操作 */
+    handleView(row) {
+      getNotice(row.noticeId).then(response => {
+        this.viewDetail = response.data
+        this.viewOpen = true
+      })
+    },
     /** 删除按钮操作 */
     handleDelete(row) {
       const noticeIds = row.noticeId || this.ids
@@ -310,3 +331,4 @@ export default {
   }
 }
 </script>
+
