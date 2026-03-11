@@ -78,7 +78,7 @@ export default {
   margin: 0 15px !important;
 }
 
-/* topbar more arrow */ 
+/* topbar more arrow */
 .topbar-menu .el-submenu .el-submenu__icon-arrow {
   position: static;
   vertical-align: middle;
@@ -93,6 +93,11 @@ export default {
 
 .el-menu--horizontal .el-menu .el-menu-item, .el-menu--horizontal .el-menu .el-submenu__title{
   color: #303133;
+}
+
+.topbar-menu.el-menu--horizontal {
+  display: inline-flex;
+  border-bottom: none;
 }
 </style>
 

@@ -1,8 +1,8 @@
 <template>
   <el-dialog
     :visible.sync="visible"
-    width="800px"
-    top="8vh"
+    width="90%"
+    top="5vh"
     custom-class="notice-view-dialog"
     @close="$emit('update:show', false)">
     <div slot="title" class="nv-title">{{ detail.noticeTitle }}</div>
@@ -33,6 +33,8 @@ export default {
 
 <style lang="scss">
 .notice-view-dialog {
+  max-width: 800px;
+
   .el-dialog__header {
     padding: 20px 24px 16px;
     border-bottom: none;
@@ -41,6 +43,19 @@ export default {
     padding: 0 24px 24px;
     height: calc(85vh - 120px);
     overflow-y: auto;
+  }
+
+  @media (max-width: 768px) {
+    width: 95% !important;
+    margin: 0 auto !important;
+
+    .el-dialog__header {
+      padding: 16px 16px 12px;
+    }
+    .el-dialog__body {
+      padding: 0 16px 16px;
+      height: calc(90vh - 100px);
+    }
   }
 }
 </style>
@@ -101,6 +116,37 @@ export default {
     padding: 2px 6px;
     border-radius: 3px;
     font-family: monospace;
+  }
+}
+
+@media (max-width: 768px) {
+  .nv-title {
+    font-size: 18px;
+  }
+
+  .nv-meta {
+    gap: 16px;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+
+  .nv-divider {
+    margin-bottom: 16px;
+  }
+
+  .nv-body {
+    font-size: 14px;
+    line-height: 1.7;
+
+    ::v-deep img {
+      margin: 12px 0;
+    }
+    ::v-deep h1, ::v-deep h2, ::v-deep h3 {
+      margin: 16px 0 10px;
+    }
+    ::v-deep ul, ::v-deep ol {
+      padding-left: 20px;
+    }
   }
 }
 </style>

@@ -9,10 +9,6 @@
       <top-bar id="topbar-container" class="topbar-container" />
     </template>
     <div class="right-menu">
-      <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
-      </template>
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="hover">
         <div class="avatar-wrapper">
@@ -155,6 +151,7 @@ export default {
     min-width: 0;
     display: flex;
     align-items: center;
+    justify-content: center;
     overflow: hidden;
     margin-left: 8px;
   }
