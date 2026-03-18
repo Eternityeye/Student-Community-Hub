@@ -87,6 +87,25 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/dispute',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/task-square/DisputeList'),
+        name: 'DisputeList',
+        meta: { title: '我的纠纷' }
+      },
+      {
+        path: ':id',
+        component: () => import('@/views/task-square/DisputeDetail'),
+        name: 'DisputeDetail',
+        meta: { title: '纠纷详情' }
+      }
+    ]
   }
 ]
 

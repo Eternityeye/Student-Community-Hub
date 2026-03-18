@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RewardTaskMapper">
+
+    <resultMap type="RewardTask" id="RewardTaskResult">
+        <result property="taskId"       column="task_id"       />
+        <result property="userId"       column="user_id"       />
+        <result property="title"        column="title"         />
+        <result property="category"     column="category"      />
+        <result property="description"  column="description"   />
+        <result property="reward"       column="reward"        />
+        <result property="location"     column="location"      />
+        <result property="deadline"     column="deadline"      />
+        <result property="takerId"      column="taker_id"      />
+        <result property="status"       column="status"        />
+        <result property="imagesStr"    column="images_str"    />
+        <result property="createBy"     column="create_by"     />
+        <result property="createTime"   column="create_time"   />
+        <result property="updateBy"     column="update_by"     />
+        <result property="updateTime"   column="update_time"   />
+        <result property="remark"       column="remark"        />
+        <result property="userName"     column="user_name"     />
+        <result property="userAvatar"   column="user_avatar"   />
+        <result property="takerName"    column="taker_name"    />
+        <result property="takerAvatar"  column="taker_avatar"  />
+    </resultMap>
+
+    <sql id="selectTaskVo">
+        select
+            rt.task_id,
+            rt.user_id,
+            rt.title,
+            rt.category,
+            rt.description,
+            rt.reward,
+            rt.location,
+            rt.deadline,
+            rt.taker_id,
+            rt.status,
+            rt.images as images_str,
+            rt.create_by,
+            rt.create_time,
+            rt.update_by,
+            rt.update_time,
+            rt.remark,
+            su.nick_name as user_name,
+            su.avatar as user_avatar,
+            su2.nick_name as taker_name,
+            su2.avatar as taker_avatar
+        from reward_task rt
+        left join sys_user su on rt.user_id = su.user_id
+        left join sys_user su2 on rt.taker_id = su2.user_id
+    </sql>
+
+    <!-- 查询任务列表 -->
+    <select id="selectTaskList" parameterType="RewardTask" resultMap="RewardTaskResult">
+        <include refid="selectTaskVo" />
+        <where>
+            <if test="status != null and status != ''">
+                and rt.status = #{status}
+            </if>
+            <if test="category != null and category != ''">
+                and rt.category = #{category}
+            </if>
+            <if test="userId != null">
+                and rt.user_id = #{userId}
+            </if>
+        </where>
+        order by rt.create_time desc
+    </select>
+
+    <!-- 查询任务详情 -->
+    <select id="selectTaskById" parameterType="Long" resultMap="RewardTaskResult">
+        <include refid="selectTaskVo" />
+        where rt.task_id = #{taskId}
+    </select>
+
+    <!-- 新增任务 -->
+    <insert id="insertTask" parameterType="RewardTask" useGeneratedKeys="true" keyProperty="taskId">
+        insert into reward_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="title != null">title,</if>
+            <if test="category != null">category,</if>
+            <if test="description != null">description,</if>
+            <if test="reward != null">reward,</if>
+            <if test="location != null">location,</if>
+            <if test="deadline != null">deadline,</if>
+            <if test="status != null">status,</if>
+            <if test="imagesStr != null">images,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="remark != null">remark,</if>
+            create_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="category != null">#{category},</if>
+            <if test="description != null">#{description},</if>
+            <if test="reward != null">#{reward},</if>
+            <if test="location != null">#{location},</if>
+            <if test="deadline != null">#{deadline},</if>
+            <if test="status != null">#{status},</if>
+            <if test="imagesStr != null">#{imagesStr},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="remark != null">#{remark},</if>
+            sysdate()
+        </trim>
+    </insert>
+
+    <!-- 修改任务 -->
+    <update id="updateTask" parameterType="RewardTask">
+        update reward_task
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="reward != null">reward = #{reward},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="deadline != null">deadline = #{deadline},</if>
+            <if test="takerId != null">taker_id = #{takerId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="imagesStr != null">images = #{imagesStr},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where task_id = #{taskId}
+    </update>
+
+    <!-- 删除任务 -->
+    <delete id="deleteTaskById" parameterType="Long">
+        delete from reward_task where task_id = #{taskId}
+    </delete>
+
+    <!-- 接单 -->
+    <update id="takeTask">
+        update reward_task set taker_id = #{takerId}, status = '1' where task_id = #{taskId} and status = '0'
+    </update>
+
+    <!-- 查询用户发布的任务列表 -->
+    <select id="selectTasksByPublisher" parameterType="Long" resultMap="RewardTaskResult">
+        <include refid="selectTaskVo" />
+        where rt.user_id = #{userId}
+        order by rt.create_time desc
+    </select>
+
+    <!-- 查询用户接单的任务列表 -->
+    <select id="selectTasksByTaker" parameterType="Long" resultMap="RewardTaskResult">
+        <include refid="selectTaskVo" />
+        where rt.taker_id = #{takerId}
+        order by rt.create_time desc
+    </select>
+
+</mapper>

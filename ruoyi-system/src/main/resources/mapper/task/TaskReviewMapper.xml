@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TaskReviewMapper">
+
+    <resultMap type="TaskReview" id="TaskReviewResult">
+        <result property="reviewId"      column="review_id"      />
+        <result property="taskId"        column="task_id"        />
+        <result property="reviewerId"    column="reviewer_id"    />
+        <result property="revieweeId"    column="reviewee_id"    />
+        <result property="roleType"      column="role_type"      />
+        <result property="rating"        column="rating"         />
+        <result property="content"       column="content"        />
+        <result property="createTime"    column="create_time"    />
+        <result property="reviewerName"  column="reviewer_name"  />
+        <result property="reviewerAvatar" column="reviewer_avatar" />
+        <result property="revieweeName"  column="reviewee_name"  />
+    </resultMap>
+
+    <sql id="selectReviewVo">
+        select
+            tr.review_id,
+            tr.task_id,
+            tr.reviewer_id,
+            tr.reviewee_id,
+            tr.role_type,
+            tr.rating,
+            tr.content,
+            tr.create_time,
+            su.nick_name as reviewer_name,
+            su.avatar as reviewer_avatar,
+            su2.nick_name as reviewee_name
+        from task_review tr
+        left join sys_user su on tr.reviewer_id = su.user_id
+        left join sys_user su2 on tr.reviewee_id = su2.user_id
+    </sql>
+
+    <!-- 查询评价列表 -->
+    <select id="selectReviewList" parameterType="TaskReview" resultMap="TaskReviewResult">
+        <include refid="selectReviewVo" />
+        <where>
+            <if test="taskId != null">
+                and tr.task_id = #{taskId}
+            </if>
+            <if test="revieweeId != null">
+                and tr.reviewee_id = #{revieweeId}
+            </if>
+            <if test="roleType != null">
+                and tr.role_type = #{roleType}
+            </if>
+        </where>
+        order by tr.create_time desc
+    </select>
+
+    <!-- 查询评价详情 -->
+    <select id="selectReviewById" parameterType="Long" resultMap="TaskReviewResult">
+        <include refid="selectReviewVo" />
+        where tr.review_id = #{reviewId}
+    </select>
+
+    <!-- 新增评价 -->
+    <insert id="insertReview" parameterType="TaskReview" useGeneratedKeys="true" keyProperty="reviewId">
+        insert into task_review
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">task_id,</if>
+            <if test="reviewerId != null">reviewer_id,</if>
+            <if test="revieweeId != null">reviewee_id,</if>
+            <if test="roleType != null">role_type,</if>
+            <if test="rating != null">rating,</if>
+            <if test="content != null">content,</if>
+            create_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">#{taskId},</if>
+            <if test="reviewerId != null">#{reviewerId},</if>
+            <if test="revieweeId != null">#{revieweeId},</if>
+            <if test="roleType != null">#{roleType},</if>
+            <if test="rating != null">#{rating},</if>
+            <if test="content != null">#{content},</if>
+            sysdate()
+        </trim>
+    </insert>
+
+    <!-- 查询用户收到的评价列表 -->
+    <select id="selectReviewsByReviewee" parameterType="Long" resultMap="TaskReviewResult">
+        <include refid="selectReviewVo" />
+        where tr.reviewee_id = #{revieweeId}
+        order by tr.create_time desc
+    </select>
+
+    <!-- 查询任务的所有评价 -->
+    <select id="selectReviewsByTask" parameterType="Long" resultMap="TaskReviewResult">
+        <include refid="selectReviewVo" />
+        where tr.task_id = #{taskId}
+        order by tr.create_time desc
+    </select>
+
+    <!-- 获取用户的评价统计 -->
+    <select id="selectReviewStats" parameterType="Long" resultType="java.util.Map">
+        select
+            count(*) as total,
+            avg(rating) as avgRating,
+            sum(case when rating = 5 then 1 else 0 end) as count5Star,
+            sum(case when rating = 4 then 1 else 0 end) as count4Star,
+            sum(case when rating = 3 then 1 else 0 end) as count3Star,
+            sum(case when rating = 2 then 1 else 0 end) as count2Star,
+            sum(case when rating = 1 then 1 else 0 end) as count1Star
+        from task_review
+        where reviewee_id = #{userId}
+    </select>
+
+</mapper>

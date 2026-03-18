@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SocialPostMapper">
+
+    <resultMap type="SocialPost" id="SocialPostResult">
+        <result property="postId"      column="post_id"      />
+        <result property="userId"      column="user_id"      />
+        <result property="content"     column="content"      />
+        <result property="imagesStr"   column="images_str"   />
+        <result property="tagsStr"     column="tags_str"     />
+        <result property="likeCount"   column="like_count"   />
+        <result property="commentCount" column="comment_count" />
+        <result property="status"      column="status"       />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"  column="create_time"  />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"  column="update_time"  />
+        <result property="remark"      column="remark"       />
+        <result property="userName"    column="user_name"    />
+        <result property="userAvatar"  column="user_avatar"  />
+    </resultMap>
+
+    <sql id="selectPostVo">
+        select
+            sp.post_id,
+            sp.user_id,
+            sp.content,
+            sp.images as images_str,
+            sp.tags as tags_str,
+            sp.like_count,
+            sp.comment_count,
+            sp.status,
+            sp.create_by,
+            sp.create_time,
+            sp.update_by,
+            sp.update_time,
+            sp.remark,
+            su.nick_name as user_name,
+            su.avatar as user_avatar
+        from social_post sp
+        left join sys_user su on sp.user_id = su.user_id
+    </sql>
+
+    <!-- 查询帖子列表 -->
+    <select id="selectPostList" parameterType="SocialPost" resultMap="SocialPostResult">
+        <include refid="selectPostVo" />
+        <where>
+            <if test="status != null and status != ''">
+                and sp.status = #{status}
+            </if>
+            <if test="userId != null">
+                and sp.user_id = #{userId}
+            </if>
+            <if test="tags != null and tags != ''">
+                and sp.tags like concat('%', #{tags}, '%')
+            </if>
+        </where>
+        order by sp.create_time desc
+    </select>
+
+    <!-- 查询帖子详情 -->
+    <select id="selectPostById" parameterType="Long" resultMap="SocialPostResult">
+        select
+            sp.post_id,
+            sp.user_id,
+            sp.content,
+            sp.images as images_str,
+            sp.tags as tags_str,
+            sp.like_count,
+            sp.comment_count,
+            sp.status,
+            sp.create_by,
+            sp.create_time,
+            sp.update_by,
+            sp.update_time,
+            sp.remark,
+            su.nick_name as user_name,
+            su.avatar as user_avatar
+        from social_post sp
+        left join sys_user su on sp.user_id = su.user_id
+        where sp.post_id = #{postId}
+    </select>
+
+    <!-- 新增帖子 -->
+    <insert id="insertPost" parameterType="SocialPost" useGeneratedKeys="true" keyProperty="postId">
+        insert into social_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="content != null">content,</if>
+            <if test="imagesStr != null">images,</if>
+            <if test="tagsStr != null">tags,</if>
+            <if test="likeCount != null">like_count,</if>
+            <if test="commentCount != null">comment_count,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="remark != null">remark,</if>
+            create_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="imagesStr != null">#{imagesStr},</if>
+            <if test="tagsStr != null">#{tagsStr},</if>
+            <if test="likeCount != null">#{likeCount},</if>
+            <if test="commentCount != null">#{commentCount},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="remark != null">#{remark},</if>
+            sysdate()
+        </trim>
+    </insert>
+
+    <!-- 修改帖子 -->
+    <update id="updatePost" parameterType="SocialPost">
+        update social_post
+        <set>
+            <if test="content != null">content = #{content},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="tags != null">tags = #{tags},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where post_id = #{postId}
+    </update>
+
+    <!-- 删除帖子 -->
+    <delete id="deletePostById" parameterType="Long">
+        delete from social_post where post_id = #{postId}
+    </delete>
+
+    <!-- 增加点赞数 -->
+    <update id="updateLikeCountAdd" parameterType="Long">
+        update social_post set like_count = like_count + 1 where post_id = #{postId}
+    </update>
+
+    <!-- 减少点赞数 -->
+    <update id="updateLikeCountSub" parameterType="Long">
+        update social_post set like_count = like_count - 1 where post_id = #{postId} and like_count > 0
+    </update>
+
+    <!-- 增加评论数 -->
+    <update id="updateCommentCountAdd" parameterType="Long">
+        update social_post set comment_count = comment_count + 1 where post_id = #{postId}
+    </update>
+
+    <!-- 减少评论数 -->
+    <update id="updateCommentCountSub" parameterType="Long">
+        update social_post set comment_count = comment_count - 1 where post_id = #{postId} and comment_count > 0
+    </update>
+
+</mapper>

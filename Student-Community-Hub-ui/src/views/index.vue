@@ -48,31 +48,47 @@
           <i class="el-icon-s-grid"></i>
           <span>快捷操作</span>
         </div>
-        <div class="action-list">
-          <div class="action-item" @click="$router.push('/system/user')">
-            <i class="el-icon-user"></i>
-            <span>用户管理</span>
-          </div>
-          <div class="action-item" @click="$router.push('/system/role')">
-            <i class="el-icon-s-custom"></i>
-            <span>角色管理</span>
-          </div>
-          <div class="action-item" @click="$router.push('/system/menu')">
-            <i class="el-icon-menu"></i>
-            <span>菜单管理</span>
-          </div>
-          <div class="action-item" @click="$router.push('/system/config')">
-            <i class="el-icon-setting"></i>
-            <span>系统配置</span>
-          </div>
-          <div class="action-item" @click="$router.push('/monitor/server')">
-            <i class="el-icon-monitor"></i>
-            <span>服务监控</span>
-          </div>
-          <div class="action-item" @click="$router.push('/user/profile')">
-            <i class="el-icon-user-solid"></i>
-            <span>个人中心</span>
-          </div>
+        <div class="action-list" :class="{ 'student-menu': isStudent }">
+          <template v-if="isStudent">
+            <div class="action-item" @click="$router.push('/user/profile')">
+              <i class="el-icon-user-solid"></i>
+              <span>个人中心</span>
+            </div>
+            <div class="action-item" @click="$router.push('/social-square')">
+              <i class="el-icon-chat-line-round"></i>
+              <span>社交广场</span>
+            </div>
+            <div class="action-item" @click="$router.push('/notice')">
+              <i class="el-icon-bell"></i>
+              <span>通知公告</span>
+            </div>
+          </template>
+          <template v-else>
+            <div class="action-item" @click="$router.push('/system/user')">
+              <i class="el-icon-user"></i>
+              <span>用户管理</span>
+            </div>
+            <div class="action-item" @click="$router.push('/system/role')">
+              <i class="el-icon-s-custom"></i>
+              <span>角色管理</span>
+            </div>
+            <div class="action-item" @click="$router.push('/system/menu')">
+              <i class="el-icon-menu"></i>
+              <span>菜单管理</span>
+            </div>
+            <div class="action-item" @click="$router.push('/system/config')">
+              <i class="el-icon-setting"></i>
+              <span>系统配置</span>
+            </div>
+            <div class="action-item" @click="$router.push('/monitor/server')">
+              <i class="el-icon-monitor"></i>
+              <span>服务监控</span>
+            </div>
+            <div class="action-item" @click="$router.push('/user/profile')">
+              <i class="el-icon-user-solid"></i>
+              <span>个人中心</span>
+            </div>
+          </template>
         </div>
       </div>
 
@@ -155,6 +171,9 @@ export default {
     },
     roleNames() {
       return this.roles.join('、') || '暂无角色'
+    },
+    isStudent() {
+      return this.roles && this.roles.includes('student')
     }
   },
   mounted() {

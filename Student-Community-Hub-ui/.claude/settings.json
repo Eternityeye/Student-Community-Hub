@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find src -name \"*.js\" -type f -exec grep -l \"upload\\\\|上传\" {} ;)",
+      "Read(//Users/claudecode/Desktop/**)",
+      "Read(//c/Users/Administrator/Desktop/Student-Community-Hub//**)",
+      "Read(//c/Users/Administrator/Desktop/Student-Community-Hub/**)",
+      "Read(//Users/please_find_the_real_dir_using_pwd_cmd/src/views/social-square/components/**)",
+      "Read(//c/Users/please_find_the_real_dir_using_pwd_cmd/src/views/social-square/components/**)",
+      "Bash(find . -name *ditor* -type f)",
+      "Read(//Users/claudecode/src/components/Editor/**)",
+      "Read(//c/Users/claudecode/src/components/Editor/**)",
+      "Read(//Users/Administrator/Desktop/Student-Community-Hub/Student-Community-Hub-ui/src/views/social/**)",
+      "Read(//c/Users/Administrator/Desktop/Student-Community-Hub/Student-Community-Hub-ui/src/views/social/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Administrator\\Desktop\\Student-Community-Hub\\ruoyi-system\\src\\main\\java\\com\\ruoyi\\system\\service\\impl",
+      "\\Users\\Administrator\\Desktop\\Student-Community-Hub\\Student-Community-Hub-ui\\src\\views\\social",
+      "c:\\Users\\Administrator\\Desktop\\Student-Community-Hub\\Student-Community-Hub-ui\\src\\views\\social"
+    ]
+  }
+}

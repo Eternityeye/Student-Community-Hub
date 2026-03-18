@@ -9,6 +9,15 @@ export function listNotice(query) {
   })
 }
 
+// 查询我的通知列表
+export function listMyNotice(query) {
+  return request({
+    url: '/system/notice/myNotice',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询公告详细
 export function getNotice(noticeId) {
   return request({

@@ -28,6 +28,9 @@ public class SysNotice extends BaseEntity
     /** 公告内容 */
     private String noticeContent;
 
+    /** 收件人用户ID（为空则为公开公告，不为空则为私人通知） */
+    private Long recipientUserId;
+
     /** 公告状态（0正常 1关闭） */
     private String status;
 
@@ -74,6 +77,16 @@ public class SysNotice extends BaseEntity
         return noticeContent;
     }
 
+    public void setRecipientUserId(Long recipientUserId)
+    {
+        this.recipientUserId = recipientUserId;
+    }
+
+    public Long getRecipientUserId()
+    {
+        return recipientUserId;
+    }
+
     public void setStatus(String status)
     {
         this.status = status;
@@ -91,6 +104,7 @@ public class SysNotice extends BaseEntity
             .append("noticeTitle", getNoticeTitle())
             .append("noticeType", getNoticeType())
             .append("noticeContent", getNoticeContent())
+            .append("recipientUserId", getRecipientUserId())
             .append("status", getStatus())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())

@@ -9,6 +9,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="noticeTitle"    column="notice_title"    />
         <result property="noticeType"     column="notice_type"     />
         <result property="noticeContent"  column="notice_content"  />
+        <result property="recipientUserId" column="recipient_user_id" />
         <result property="status"         column="status"          />
         <result property="createBy"       column="create_by"       />
         <result property="createTime"     column="create_time"     />
@@ -18,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
     
     <sql id="selectNoticeVo">
-        select notice_id, notice_title, notice_type, cast(notice_content as char) as notice_content, status, create_by, create_time, update_by, update_time, remark 
+        select notice_id, notice_title, notice_type, cast(notice_content as char) as notice_content, recipient_user_id, status, create_by, create_time, update_by, update_time, remark
 		from sys_notice
     </sql>
     
@@ -42,12 +43,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</where>
         ORDER BY update_time DESC
     </select>
+
+    <select id="selectMyNoticeList" parameterType="SysNotice" resultMap="SysNoticeResult">
+        <include refid="selectNoticeVo"/>
+        <where>
+            AND status = '0'
+            AND (recipient_user_id IS NULL OR recipient_user_id = #{recipientUserId})
+        </where>
+        ORDER BY update_time DESC
+    </select>
     
     <insert id="insertNotice" parameterType="SysNotice">
         insert into sys_notice (
 			<if test="noticeTitle != null and noticeTitle != '' ">notice_title, </if>
 			<if test="noticeType != null and noticeType != '' ">notice_type, </if>
 			<if test="noticeContent != null and noticeContent != '' ">notice_content, </if>
+			<if test="recipientUserId != null">recipient_user_id, </if>
 			<if test="status != null and status != '' ">status, </if>
 			<if test="remark != null and remark != ''">remark,</if>
  			<if test="createBy != null and createBy != ''">create_by,</if>
@@ -56,6 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="noticeTitle != null and noticeTitle != ''">#{noticeTitle}, </if>
 			<if test="noticeType != null and noticeType != ''">#{noticeType}, </if>
 			<if test="noticeContent != null and noticeContent != ''">#{noticeContent}, </if>
+			<if test="recipientUserId != null">#{recipientUserId}, </if>
 			<if test="status != null and status != ''">#{status}, </if>
 			<if test="remark != null and remark != ''">#{remark},</if>
  			<if test="createBy != null and createBy != ''">#{createBy},</if>
@@ -64,11 +76,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 	 
     <update id="updateNotice" parameterType="SysNotice">
-        update sys_notice 
+        update sys_notice
         <set>
             <if test="noticeTitle != null and noticeTitle != ''">notice_title = #{noticeTitle}, </if>
             <if test="noticeType != null and noticeType != ''">notice_type = #{noticeType}, </if>
             <if test="noticeContent != null">notice_content = #{noticeContent}, </if>
+            <if test="recipientUserId != null">recipient_user_id = #{recipientUserId}, </if>
             <if test="status != null and status != ''">status = #{status}, </if>
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
  			update_time = sysdate()

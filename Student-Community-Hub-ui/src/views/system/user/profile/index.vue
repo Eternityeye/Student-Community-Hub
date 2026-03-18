@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <el-col :span="6" :xs="24">
+      <el-col :span="6" :xs="24" class="sidebar-col">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>个人信息</span>
@@ -51,8 +51,20 @@
             <el-tab-pane label="修改密码" name="resetPwd">
               <resetPwd />
             </el-tab-pane>
+            <el-tab-pane label="我的帖子" name="myPosts">
+              <userPosts />
+            </el-tab-pane>
+            <el-tab-pane label="我的任务" name="myTasks">
+              <userTasks />
+            </el-tab-pane>
+            <el-tab-pane label="我的纠纷" name="myDisputes">
+              <userDisputes />
+            </el-tab-pane>
           </el-tabs>
         </el-card>
+
+        <!-- 信誉信息卡片 -->
+        <credit-info v-if="user.userId" :user-id="user.userId" style="margin-top: 20px;" />
       </el-col>
     </el-row>
   </div>
@@ -62,11 +74,23 @@
 import userAvatar from "./userAvatar"
 import userInfo from "./userInfo"
 import resetPwd from "./resetPwd"
+import userPosts from "./userPosts"
+import userTasks from "./userTasks"
+import userDisputes from "./userDisputes"
+import CreditInfo from "@/components/CreditInfo"
 import { getUserProfile } from "@/api/system/user"
 
 export default {
   name: "Profile",
-  components: { userAvatar, userInfo, resetPwd },
+  components: {
+    userAvatar,
+    userInfo,
+    resetPwd,
+    userPosts,
+    userTasks,
+    userDisputes,
+    CreditInfo
+  },
   data() {
     return {
       user: {},
@@ -93,3 +117,20 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.sidebar-col {
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .sidebar-col {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+</style>

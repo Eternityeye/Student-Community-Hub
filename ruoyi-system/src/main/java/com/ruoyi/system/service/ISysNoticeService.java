@@ -20,11 +20,19 @@ public interface ISysNoticeService
 
     /**
      * 查询公告列表
-     * 
+     *
      * @param notice 公告信息
      * @return 公告集合
      */
     public List<SysNotice> selectNoticeList(SysNotice notice);
+
+    /**
+     * 查询我的通知列表（只显示属于当前用户的私人通知和公开公告）
+     *
+     * @param notice 公告信息（需要设置 recipientUserId 为当前用户ID）
+     * @return 公告集合
+     */
+    public List<SysNotice> selectMyNoticeList(SysNotice notice);
 
     /**
      * 新增公告

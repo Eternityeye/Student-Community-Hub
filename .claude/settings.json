@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn clean:*)",
+      "Read(//Users/**)",
+      "Read(//c/Users/**)",
+      "Bash(find Student-Community-Hub-ui -name datetime* -type f)",
+      "Bash(find /c/Users/Administrator/Desktop/Student-Community-Hub/Student-Community-Hub-ui/src -name *.js -path */router*)",
+      "Bash(grep -n \"from ''@/utils/\" /c/Users/Administrator/Desktop/Student-Community-Hub/Student-Community-Hub-ui/src/views/task-square/DisputeDetail.vue)",
+      "Bash(npm run:*)",
+      "Bash(find /c/Users/Administrator/Desktop/Student-Community-Hub -name \"*.java\" -type f -exec grep -l \"getDataTable\" {})"
+    ],
+    "additionalDirectories": [
+      "\\Users\\Administrator\\Desktop\\Student-Community-Hub\\ruoyi-system\\src\\main\\java\\com\\ruoyi\\system\\service\\impl",
+      "c:\\Users\\Administrator\\Desktop\\Student-Community-Hub\\ruoyi-system\\src\\main\\java\\com\\ruoyi\\system\\service\\impl",
+      "\\Users\\Administrator\\Desktop\\Student-Community-Hub\\ruoyi-system\\src\\main\\java\\com\\ruoyi\\system\\domain",
+      "c:\\Users\\Administrator\\Desktop\\Student-Community-Hub\\ruoyi-system\\src\\main\\java\\com\\ruoyi\\system\\domain",
+      "\\Users\\Administrator\\Desktop\\Student-Community-Hub\\Student-Community-Hub-ui\\src\\views\\social-square\\components",
+      "c:\\Users\\Administrator\\Desktop\\Student-Community-Hub\\Student-Community-Hub-ui\\src\\views\\social-square\\components",
+      "\\Users\\claudecode\\sql",
+      "c:\\Users\\claudecode\\sql",
+      "\\tmp"
+    ]
+  }
+}

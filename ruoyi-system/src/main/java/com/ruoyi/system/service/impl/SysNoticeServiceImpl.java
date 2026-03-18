@@ -32,7 +32,7 @@ public class SysNoticeServiceImpl implements ISysNoticeService
 
     /**
      * 查询公告列表
-     * 
+     *
      * @param notice 公告信息
      * @return 公告集合
      */
@@ -40,6 +40,18 @@ public class SysNoticeServiceImpl implements ISysNoticeService
     public List<SysNotice> selectNoticeList(SysNotice notice)
     {
         return noticeMapper.selectNoticeList(notice);
+    }
+
+    /**
+     * 查询我的通知列表（只显示属于当前用户的私人通知和公开公告）
+     *
+     * @param notice 公告信息
+     * @return 公告集合
+     */
+    @Override
+    public List<SysNotice> selectMyNoticeList(SysNotice notice)
+    {
+        return noticeMapper.selectMyNoticeList(notice);
     }
 
     /**
