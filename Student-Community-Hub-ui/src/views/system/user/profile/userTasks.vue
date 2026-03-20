@@ -52,6 +52,22 @@
                     >
                       删除
                     </el-button>
+                    <el-button
+                      v-if="task.status === '2'"
+                      size="small"
+                      type="success"
+                      @click="handleConfirmTask(task.taskId)"
+                    >
+                      确认完成
+                    </el-button>
+                    <el-button
+                      v-if="task.status === '2'"
+                      size="small"
+                      type="warning"
+                      @click="handleCreateDispute(task)"
+                    >
+                      发起纠纷
+                    </el-button>
                   </div>
                 </div>
               </el-col>
@@ -111,6 +127,14 @@
                     >
                       我已完成
                     </el-button>
+                    <el-button
+                      v-if="task.status === '2'"
+                      size="small"
+                      type="warning"
+                      @click="handleCreateDispute(task)"
+                    >
+                      发起纠纷
+                    </el-button>
                   </div>
                 </div>
               </el-col>
@@ -145,18 +169,32 @@
 
     <!-- 任务详情弹窗 -->
     <task-detail-dialog v-if="selectedTaskId" v-model="showDetailDialog" :task-id="selectedTaskId" />
+
+    <!-- 发起纠纷弹窗 -->
+    <create-dispute-dialog
+      v-if="disputeTask"
+      :visible.sync="showDisputeDialog"
+      :task-id="disputeTask.taskId"
+      :task-title="disputeTask.title"
+      :opposite-user-id="disputeTask._oppositeUserId"
+      :opposite-user-name="disputeTask._oppositeUserName"
+      :my-role="disputeTask._myRole"
+      @success="handleDisputeSuccess"
+    />
   </div>
 </template>
 
 <script>
-import { listMyPublished, listMyTaken, listMyReviews, delTask, completeTask } from '@/api/task/task'
+import { listMyPublished, listMyTaken, listMyReviews, delTask, completeTask, confirmTask } from '@/api/task/task'
 import TaskDetailDialog from '@/views/task-square/components/TaskDetailDialog.vue'
+import CreateDisputeDialog from '@/views/task-square/components/CreateDisputeDialog.vue'
 import { formatTime, formatDateTime } from '@/utils/datetime'
 
 export default {
   name: 'UserTasks',
   components: {
-    TaskDetailDialog
+    TaskDetailDialog,
+    CreateDisputeDialog
   },
   data() {
     return {
@@ -166,7 +204,9 @@ export default {
       myReviews: [],
       loading: false,
       showDetailDialog: false,
-      selectedTaskId: null
+      selectedTaskId: null,
+      showDisputeDialog: false,
+      disputeTask: null
     }
   },
   mounted() {
@@ -223,11 +263,11 @@ export default {
       return map[category] || ''
     },
     getStatusName(status) {
-      const map = { '0': '待接单', '1': '进行中', '2': '待确认', '3': '已关闭' }
+      const map = { '0': '待接单', '1': '进行中', '2': '待确认', '3': '已完成', '4': '纠纷中' }
       return map[status] || '未知'
     },
     getStatusType(status) {
-      const map = { '0': 'success', '1': 'warning', '2': 'info', '3': 'danger' }
+      const map = { '0': 'info', '1': 'warning', '2': '', '3': 'success', '4': 'danger' }
       return map[status] || ''
     },
     viewTaskDetail(taskId) {
@@ -245,6 +285,33 @@ export default {
           this.loadPublishedTasks()
         })
       }).catch(() => {})
+    },
+    handleConfirmTask(taskId) {
+      this.$confirm('确认任务已完成？确认后双方可互相评价。', '确认完成', {
+        confirmButtonText: '确认完成',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        confirmTask(taskId).then(() => {
+          this.$message.success('任务已完成，现在可以互相评价')
+          this.loadPublishedTasks()
+        })
+      }).catch(() => {})
+    },
+    handleCreateDispute(task) {
+      const currentUserId = this.$store.state.user.id
+      const isPublisher = String(currentUserId) === String(task.userId)
+      task._myRole = isPublisher ? 'publisher' : 'taker'
+      task._oppositeUserId = isPublisher ? task.takerId : task.userId
+      task._oppositeUserName = isPublisher ? task.takerName : task.userName
+      this.disputeTask = task
+      this.showDisputeDialog = true
+    },
+    handleDisputeSuccess() {
+      this.$message.success('纠纷已提交，请等待管理员审理')
+      this.showDisputeDialog = false
+      this.loadPublishedTasks()
+      this.loadTakenTasks()
     },
     completeTask(taskId) {
       this.$confirm('确定任务已完成吗？', '提示', {

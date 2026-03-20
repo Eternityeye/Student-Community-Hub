@@ -53,10 +53,10 @@ export function getCreditLog(userId) {
 
 // ========== 管理后台接口 ==========
 
-// 获取待处理纠纷列表（管理员）
-export function getDisputePendingList(params) {
+// 获取所有纠纷列表（管理员）
+export function getAdminDisputeList(params) {
   return request({
-    url: '/admin/dispute/pending',
+    url: '/dispute/admin/list',
     method: 'get',
     params
   })
@@ -65,8 +65,8 @@ export function getDisputePendingList(params) {
 // 处理纠纷（管理员裁定）
 export function handleDispute(caseId, data) {
   return request({
-    url: `/admin/dispute/${caseId}/handle`,
+    url: `/dispute/${caseId}/handle`,
     method: 'put',
-    data
+    params: data
   })
 }

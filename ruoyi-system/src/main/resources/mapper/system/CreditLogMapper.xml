@@ -14,6 +14,12 @@
         <result property="createTime" column="create_time"/>
     </resultMap>
 
+    <!-- 新增信誉历史 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="logId">
+        insert into credit_log (user_id, change_type, change_score, related_id, reason, create_time)
+        values (#{userId}, #{changeType}, #{changeScore}, #{relatedId}, #{reason}, now())
+    </insert>
+
     <!-- 查询用户信誉历史 -->
     <select id="selectByUserId" resultMap="CreditLogResult">
         select log_id, user_id, change_type, change_score, related_id, reason, create_time

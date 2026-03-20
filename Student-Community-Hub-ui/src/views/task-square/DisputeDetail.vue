@@ -55,7 +55,7 @@
             <h3>申请人（发起方）</h3>
             <el-row :gutter="20">
               <el-col :span="6">
-                <img :src="caseDetail.plaintiffAvatar" class="user-avatar">
+                <img :src="getAvatarUrl(caseDetail.plaintiffAvatar)" class="user-avatar">
                 <div class="user-name">{{ caseDetail.plaintiffName }}</div>
               </el-col>
               <el-col :span="18">
@@ -69,9 +69,9 @@
                     <img
                       v-for="(img, idx) in caseDetail.plaintiffEvidenceImages.split(',')"
                       :key="`plaintiff-${idx}`"
-                      :src="img"
+                      :src="getImgUrl(img)"
                       class="evidence-img"
-                      @click="previewImage(img)"
+                      @click="previewImage(getImgUrl(img))"
                     >
                   </div>
                 </div>
@@ -86,12 +86,12 @@
             <h3>被申请人（被告方）</h3>
             <el-row :gutter="20">
               <el-col :span="6">
-                <img :src="caseDetail.defendantAvatar" class="user-avatar">
+                <img :src="getAvatarUrl(caseDetail.defendantAvatar)" class="user-avatar">
                 <div class="user-name">{{ caseDetail.defendantName }}</div>
               </el-col>
               <el-col :span="18">
-                <!-- 如果纠纷还在待审且当前用户是被申请人，显示上传证据 -->
-                <div v-if="isDefendant && caseDetail.status === '0'">
+                <!-- 如果纠纷还在待审且当前用户是被申请人且尚未提交答辩，显示上传证据 -->
+                <div v-if="isDefendant && caseDetail.status === '0' && !caseDetail.defendantDescription && !caseDetail.defendantEvidenceImages">
                   <div class="description-section">
                     <h4>你的答辩：</h4>
                     <el-input
@@ -146,7 +146,7 @@
                       >
                     </div>
                   </div>
-                  <p v-else class="no-data">暂未提交答辩</p>
+                  <p v-else-if="!caseDetail.defendantDescription && !caseDetail.defendantEvidenceImages" class="no-data">暂未提交答辩</p>
                 </div>
               </el-col>
             </el-row>
@@ -194,7 +194,7 @@
 <script>
 import { getDisputeDetail, submitDefenseEvidence } from '@/api/dispute'
 import { getToken } from '@/utils/auth'
-import { formatDate } from '@/utils/datetime'
+import { formatDateTime } from '@/utils/datetime'
 
 export default {
   name: 'DisputeDetail',
@@ -292,6 +292,8 @@ export default {
     handleDefendantUploadSuccess(response, file, fileList) {
       if (response.code === 200) {
         this.defendantFileList = fileList
+      } else {
+        this.$message.error('图片上传失败')
       }
     },
     submitDefenseEvidence() {
@@ -304,7 +306,9 @@ export default {
       const params = {
         caseId: this.caseId,
         defendantDescription: this.defendantDescription,
-        defendantEvidenceImages: this.defendantFileList.map(f => f.response?.fileName || f.url).join(',')
+        defendantEvidenceImages: this.defendantFileList
+          .filter(f => f.response && f.response.code === 200)
+          .map(f => f.response.fileName).join(',')
       }
 
       submitDefenseEvidence(params).then(res => {
@@ -329,8 +333,18 @@ export default {
     closeImageViewer() {
       this.imageViewerVisible = false
     },
+    getAvatarUrl(avatar) {
+      if (!avatar) return require('@/assets/images/profile.jpg')
+      if (avatar.startsWith('http')) return avatar
+      return process.env.VUE_APP_BASE_API + avatar
+    },
+    getImgUrl(url) {
+      if (!url) return ''
+      if (url.startsWith('http')) return url
+      return process.env.VUE_APP_BASE_API + url
+    },
     formatDate(date) {
-      return formatDate(date, 'YYYY-MM-DD HH:mm:ss')
+      return formatDateTime(date)
     }
   }
 }

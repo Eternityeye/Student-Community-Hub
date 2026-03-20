@@ -135,7 +135,11 @@ export default {
     },
     handleUploadSuccess(response, file, fileList) {
       if (response.code === 200) {
-        this.form.evidenceImages = fileList.map(f => f.response?.fileName || f.url)
+        this.form.evidenceImages = fileList
+          .filter(f => f.response && f.response.code === 200)
+          .map(f => f.response.fileName)
+      } else {
+        this.$message.error('图片上传失败')
       }
     },
     handleUploadError(err, file, fileList) {
@@ -164,7 +168,6 @@ export default {
             this.$message.error(result.msg || '发起纠纷失败')
           }
         } catch (error) {
-          this.$message.error('发起纠纷失败，请重试')
         } finally {
           this.submitting = false
         }

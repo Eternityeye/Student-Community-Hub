@@ -3,7 +3,9 @@ package com.ruoyi.system.service.impl;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.DisputeCase;
+import com.ruoyi.system.domain.RewardTask;
 import com.ruoyi.system.mapper.DisputeCaseMapper;
+import com.ruoyi.system.mapper.RewardTaskMapper;
 import com.ruoyi.system.service.IDisputeCaseService;
 import com.ruoyi.system.service.IUserCreditService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,9 @@ public class DisputeCaseServiceImpl implements IDisputeCaseService {
     private DisputeCaseMapper disputeCaseMapper;
 
     @Autowired
+    private RewardTaskMapper rewardTaskMapper;
+
+    @Autowired
     private IUserCreditService userCreditService;
 
     /**
@@ -50,6 +55,12 @@ public class DisputeCaseServiceImpl implements IDisputeCaseService {
 
         try {
             disputeCaseMapper.insert(disputeCase);
+            // 更新任务状态为"纠纷中"
+            RewardTask task = rewardTaskMapper.selectTaskById(disputeCase.getTaskId());
+            if (task != null) {
+                task.setStatus("4");
+                rewardTaskMapper.updateTask(task);
+            }
             return AjaxResult.success("纠纷已提交");
         } catch (Exception e) {
             log.error("创建纠纷失败", e);
@@ -190,5 +201,13 @@ public class DisputeCaseServiceImpl implements IDisputeCaseService {
     public boolean checkDisputeExists(Long taskId) {
         List<DisputeCase> cases = disputeCaseMapper.selectByTaskId(taskId);
         return cases != null && !cases.isEmpty();
+    }
+
+    /**
+     * 管理员查询所有纠纷列表
+     */
+    @Override
+    public List<DisputeCase> selectAllDisputeList(String status) {
+        return disputeCaseMapper.selectAllDisputeList(status);
     }
 }

@@ -64,4 +64,12 @@ public interface IDisputeCaseService {
      * @return true表示存在
      */
     boolean checkDisputeExists(Long taskId);
+
+    /**
+     * 管理员查询所有纠纷列表
+     *
+     * @param status 状态筛选（可为null）
+     * @return 纠纷列表
+     */
+    List<DisputeCase> selectAllDisputeList(String status);
 }

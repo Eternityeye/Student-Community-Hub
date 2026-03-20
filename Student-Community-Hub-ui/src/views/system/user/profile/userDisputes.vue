@@ -1,89 +1,68 @@
 <template>
   <div class="user-disputes">
     <!-- 筛选区域 -->
-    <el-row :gutter="20" class="filter-row">
-      <el-col :span="7">
-        <el-select
-          v-model="queryParams.status"
-          placeholder="全部状态"
-          clearable
-          @change="handleSearch"
-          style="width: 100%;"
-        >
-          <el-option label="全部状态" value=""></el-option>
-          <el-option label="待审理" value="0"></el-option>
-          <el-option label="申请人责任" value="1"></el-option>
-          <el-option label="被申请人责任" value="2"></el-option>
-          <el-option label="驳回" value="3"></el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="7">
-        <el-select
-          v-model="queryParams.roleType"
-          placeholder="全部角色"
-          clearable
-          @change="handleSearch"
-          style="width: 100%;"
-        >
-          <el-option label="全部角色" value=""></el-option>
-          <el-option label="申请人" value="plaintiff"></el-option>
-          <el-option label="被申请人" value="defendant"></el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="10">
-        <el-button-group>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-button-group>
-      </el-col>
-    </el-row>
+    <div class="filter-row">
+      <el-select v-model="queryParams.status" placeholder="全部状态" clearable size="small" @change="handleSearch">
+        <el-option label="全部状态" value="" />
+        <el-option label="待审理" value="0" />
+        <el-option label="申请人责任" value="1" />
+        <el-option label="被申请人责任" value="2" />
+      </el-select>
+      <el-select v-model="queryParams.roleType" placeholder="全部角色" clearable size="small" style="margin-left:10px;" @change="handleSearch">
+        <el-option label="全部角色" value="" />
+        <el-option label="申请人" value="plaintiff" />
+        <el-option label="被申请人" value="defendant" />
+      </el-select>
+      <el-button size="small" type="primary" style="margin-left:10px;" @click="handleSearch">搜索</el-button>
+      <el-button size="small" style="margin-left:6px;" @click="handleReset">重置</el-button>
+    </div>
 
     <!-- 纠纷列表 -->
-    <el-skeleton :loading="loading" :count="5" :rows="2">
-      <div v-if="!loading && list.length > 0">
-        <el-row
-          v-for="item in list"
-          :key="item.caseId"
-          class="dispute-item"
-          @click="goToDetail(item.caseId)"
-        >
-          <el-col :span="20">
-            <div class="dispute-header">
-              <h4>{{ item.taskTitle }}</h4>
-              <el-tag :type="getStatusType(item.status)">{{ getStatusText(item.status) }}</el-tag>
-            </div>
-            <div class="dispute-info">
-              <span>纠纷原因：{{ getReasonText(item.reason) }}</span>
-              <span style="margin-left: 20px;">角色：{{ item.roleType === 'plaintiff' ? '申请人' : '被申请人' }}</span>
-              <span style="margin-left: 20px;">{{ formatDate(item.createTime) }}</span>
-            </div>
-          </el-col>
-          <el-col :span="4" class="text-right">
-            <el-button type="text" size="small">查看详情 ></el-button>
-          </el-col>
-        </el-row>
-
-        <!-- 分页 -->
-        <el-pagination
-          :current-page="queryParams.pageNum"
-          :page-size="queryParams.pageSize"
-          :page-sizes="[5, 10, 15]"
-          :total="total"
-          layout="total, sizes, prev, pager, next"
-          @size-change="handlePageSizeChange"
-          @current-change="handlePageChange"
-          style="text-align: right; margin-top: 20px;"
-        ></el-pagination>
+    <div v-if="!loading && list.length > 0">
+      <div
+        v-for="item in list"
+        :key="item.caseId"
+        class="dispute-item"
+        @click="goToDetail(item.caseId)"
+      >
+        <div class="dispute-main">
+          <div class="dispute-title">
+            <span class="task-name">{{ item.taskTitle }}</span>
+            <el-tag :type="getStatusType(item.status)" size="small" style="margin-left:10px;">
+              {{ getStatusText(item.status) }}
+            </el-tag>
+          </div>
+          <div class="dispute-meta">
+            <span>{{ getReasonText(item.reason) }}</span>
+            <span class="sep">·</span>
+            <span>{{ item.roleType === 'plaintiff' ? '我是申请人' : '我是被申请人' }}</span>
+            <span class="sep">·</span>
+            <span>{{ formatDate(item.createTime) }}</span>
+          </div>
+        </div>
+        <i class="el-icon-arrow-right dispute-arrow" />
       </div>
 
-      <el-empty v-else description="暂无纠纷记录"></el-empty>
-    </el-skeleton>
+      <el-pagination
+        :current-page="queryParams.pageNum"
+        :page-size="queryParams.pageSize"
+        :page-sizes="[5, 10, 15]"
+        :total="total"
+        layout="total, sizes, prev, pager, next"
+        style="text-align:right; margin-top:16px;"
+        @size-change="handlePageSizeChange"
+        @current-change="handlePageChange"
+      />
+    </div>
+
+    <div v-else-if="loading" v-loading="true" style="height:100px;" />
+    <el-empty v-else description="暂无纠纷记录" />
   </div>
 </template>
 
 <script>
 import { getDisputeList } from '@/api/dispute'
-import { formatDate as formatDateUtil } from '@/utils/datetime'
+import { formatDateTime } from '@/utils/datetime'
 
 export default {
   name: 'UserDisputes',
@@ -175,7 +154,7 @@ export default {
       return reasons[reason] || reason
     },
     formatDate(date) {
-      return formatDateUtil(date, 'YYYY-MM-DD HH:mm:ss')
+      return formatDateTime(date)
     }
   }
 }
@@ -183,77 +162,57 @@ export default {
 
 <style scoped>
 .user-disputes {
-  padding: 10px 0;
+  padding: 4px 0;
 }
-
 .filter-row {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #ebeef5;
   display: flex;
   align-items: center;
+  margin-bottom: 16px;
 }
-
 .dispute-item {
   display: flex;
   align-items: center;
-  padding: 15px;
+  justify-content: space-between;
+  padding: 14px 16px;
   border: 1px solid #ebeef5;
-  border-radius: 4px;
-  margin-bottom: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
-
 .dispute-item:hover {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
   border-color: #409eff;
 }
-
-.dispute-header {
+.dispute-main {
+  flex: 1;
+  min-width: 0;
+}
+.dispute-title {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
-
-.dispute-header h4 {
-  margin: 0;
-  color: #333;
+.task-name {
+  font-size: 14px;
   font-weight: 500;
-  flex: 1;
+  color: #303133;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-.dispute-info {
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 13px;
-  color: #666;
+.dispute-meta {
+  font-size: 12px;
+  color: #909399;
 }
-
-.text-right {
-  text-align: right;
+.sep {
+  margin: 0 6px;
+  color: #dcdfe6;
 }
-
-@media (max-width: 768px) {
-  .user-disputes {
-    padding: 5px 0;
-  }
-
-  .dispute-item {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px;
-  }
-
-  .dispute-header {
-    width: 100%;
-  }
-
-  .text-right {
-    width: 100%;
-    text-align: left;
-    margin-top: 10px;
-  }
+.dispute-arrow {
+  color: #c0c4cc;
+  font-size: 14px;
+  margin-left: 12px;
+  flex-shrink: 0;
 }
 </style>

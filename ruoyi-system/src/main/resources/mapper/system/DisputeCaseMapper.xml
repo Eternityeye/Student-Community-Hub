@@ -32,11 +32,11 @@
 
     <sql id="selectDisputeCaseVo">
         select dc.case_id, dc.task_id, rt.title as task_title,
-               dc.plaintiff_id, up.user_name as plaintiff_name, up.avatar as plaintiff_avatar,
-               dc.defendant_id, ud.user_name as defendant_name, ud.avatar as defendant_avatar,
+               dc.plaintiff_id, up.nick_name as plaintiff_name, up.avatar as plaintiff_avatar,
+               dc.defendant_id, ud.nick_name as defendant_name, ud.avatar as defendant_avatar,
                dc.reason, dc.plaintiff_description, dc.defendant_description,
                dc.plaintiff_evidence_images, dc.defendant_evidence_images,
-               dc.status, dc.handler_id, uh.user_name as handler_name,
+               dc.status, dc.handler_id, uh.nick_name as handler_name,
                dc.handle_reason, dc.handle_time,
                dc.create_by, dc.create_time, dc.update_by, dc.update_time
         from dispute_case dc
@@ -74,10 +74,57 @@
         order by dc.create_time desc
     </select>
 
+    <!-- 新增纠纷 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="caseId">
+        insert into dispute_case (task_id, plaintiff_id, defendant_id, reason,
+            plaintiff_description, plaintiff_evidence_images, status,
+            create_by, create_time, update_by, update_time)
+        values (#{taskId}, #{plaintiffId}, #{defendantId}, #{reason},
+            #{plaintiffDescription}, #{plaintiffEvidenceImages}, #{status},
+            #{createBy}, #{createTime}, #{updateBy}, #{updateTime})
+    </insert>
+
+    <!-- 更新纠纷 -->
+    <update id="updateById">
+        update dispute_case
+        <set>
+            <if test="defendantDescription != null">defendant_description = #{defendantDescription},</if>
+            <if test="defendantEvidenceImages != null">defendant_evidence_images = #{defendantEvidenceImages},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="handlerId != null">handler_id = #{handlerId},</if>
+            <if test="handleReason != null">handle_reason = #{handleReason},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where case_id = #{caseId}
+    </update>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultMap="DisputeCaseResult">
+        select case_id, task_id, plaintiff_id, defendant_id, reason,
+               plaintiff_description, defendant_description,
+               plaintiff_evidence_images, defendant_evidence_images,
+               status, handler_id, handle_reason, handle_time,
+               create_by, create_time, update_by, update_time
+        from dispute_case
+        where case_id = #{caseId}
+    </select>
+
     <!-- 获取纠纷详情 -->
     <select id="selectDetailById" resultMap="DisputeCaseResult">
         <include refid="selectDisputeCaseVo"/>
         where dc.case_id = #{caseId}
+    </select>
+
+    <!-- 管理员查询所有纠纷列表 -->
+    <select id="selectAllDisputeList" resultMap="DisputeCaseResult">
+        <include refid="selectDisputeCaseVo"/>
+        where 1=1
+        <if test="status != null and status != ''">
+            and dc.status = #{status}
+        </if>
+        order by dc.create_time desc
     </select>
 
 </mapper>

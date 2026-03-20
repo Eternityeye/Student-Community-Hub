@@ -100,6 +100,12 @@ export const constantRoutes = [
         meta: { title: '我的纠纷' }
       },
       {
+        path: 'manage',
+        component: () => import('@/views/task-square/DisputeManage'),
+        name: 'DisputeManage',
+        meta: { title: '纠纷管理', roles: ['admin'] }
+      },
+      {
         path: ':id',
         component: () => import('@/views/task-square/DisputeDetail'),
         name: 'DisputeDetail',

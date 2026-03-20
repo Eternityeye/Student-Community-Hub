@@ -68,11 +68,22 @@ public class DisputeController extends BaseController {
      */
     @PostMapping("/submitDefense")
     @Log(title = "提交答辩证据", businessType = BusinessType.UPDATE)
-    public AjaxResult submitDefenseEvidence(
-        @RequestParam Long caseId,
-        @RequestParam String defendantDescription,
-        @RequestParam(required = false) String defendantEvidenceImages) {
+    public AjaxResult submitDefenseEvidence(@RequestBody java.util.Map<String, Object> body) {
+        Long caseId = Long.valueOf(body.get("caseId").toString());
+        String defendantDescription = (String) body.get("defendantDescription");
+        String defendantEvidenceImages = (String) body.getOrDefault("defendantEvidenceImages", null);
         return disputeCaseService.submitDefenseEvidence(caseId, defendantDescription, defendantEvidenceImages);
+    }
+
+    /**
+     * 管理员查询所有纠纷列表
+     */
+    @GetMapping("/admin/list")
+    @PreAuthorize("@ss.hasRole('admin')")
+    public TableDataInfo selectAllDisputeList(@RequestParam(required = false) String status) {
+        startPage();
+        List<DisputeCase> list = disputeCaseService.selectAllDisputeList(status);
+        return getDataTable(list);
     }
 
     /**

@@ -92,7 +92,7 @@
 
 <script>
 import { getUserCredit, getCreditLog } from '@/api/dispute'
-import { formatDate as formatDateUtil } from '@/utils/datetime'
+import { formatDateTime } from '@/utils/datetime'
 
 export default {
   name: 'CreditInfo',
@@ -179,7 +179,7 @@ export default {
       return types[type] || type
     },
     formatDate(date) {
-      return formatDateUtil(date, 'YYYY-MM-DD HH:mm:ss')
+      return formatDateTime(date)
     }
   }
 }

@@ -21,10 +21,35 @@
         where user_id = #{userId}
     </select>
 
+    <!-- 新增信誉记录 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="creditId">
+        insert into user_credit (user_id, credit_score, dispute_count, ban_until, ban_reason, last_update)
+        values (#{userId}, #{creditScore}, #{disputeCount}, #{banUntil}, #{banReason}, #{lastUpdate})
+    </insert>
+
+    <!-- 更新信誉记录 -->
+    <update id="updateById">
+        update user_credit
+        <set>
+            <if test="creditScore != null">credit_score = #{creditScore},</if>
+            <if test="disputeCount != null">dispute_count = #{disputeCount},</if>
+            ban_until = #{banUntil},
+            ban_reason = #{banReason},
+            last_update = now()
+        </set>
+        where credit_id = #{creditId}
+    </update>
+
     <!-- 初始化用户信誉信息 -->
     <insert id="insertDefault">
         insert into user_credit (user_id, credit_score, dispute_count, ban_until, ban_reason, last_update)
         values (#{userId}, 100, 0, null, null, now())
     </insert>
+    <!-- 查询禁止期已到期的用户 -->
+    <select id="selectExpiredBans" resultMap="UserCreditResult">
+        select credit_id, user_id, credit_score, dispute_count, ban_until, ban_reason, last_update
+        from user_credit
+        where ban_until is not null and ban_until &lt; now()
+    </select>
 
 </mapper>
