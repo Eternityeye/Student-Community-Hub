@@ -153,4 +153,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by rt.create_time desc
     </select>
 
+    <!-- 查询用户对任务的评价 -->
+    <select id="selectReviewByTaskAndReviewer" resultType="com.ruoyi.system.domain.TaskReview">
+        select
+            tr.review_id as reviewId,
+            tr.task_id as taskId,
+            tr.reviewer_id as reviewerId,
+            tr.reviewee_id as revieweeId,
+            tr.role_type as roleType,
+            tr.rating,
+            tr.content,
+            tr.create_time as createTime
+        from task_review tr
+        where tr.task_id = #{taskId} and tr.reviewer_id = #{reviewerId}
+        limit 1
+    </select>
+
 </mapper>

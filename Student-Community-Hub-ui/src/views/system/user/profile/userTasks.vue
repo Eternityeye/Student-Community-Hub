@@ -68,6 +68,21 @@
                     >
                       发起纠纷
                     </el-button>
+                    <el-button
+                      v-if="task.status === '3' && !task.isReviewed"
+                      size="small"
+                      type="primary"
+                      @click="handleReviewTask(task)"
+                    >
+                      评价接单者
+                    </el-button>
+                    <el-button
+                      v-if="task.status === '3' && task.isReviewed"
+                      size="small"
+                      disabled
+                    >
+                      已评价
+                    </el-button>
                   </div>
                 </div>
               </el-col>
@@ -135,6 +150,21 @@
                     >
                       发起纠纷
                     </el-button>
+                    <el-button
+                      v-if="task.status === '3' && !task.isReviewed"
+                      size="small"
+                      type="primary"
+                      @click="handleReviewTask(task)"
+                    >
+                      评价发布者
+                    </el-button>
+                    <el-button
+                      v-if="task.status === '3' && task.isReviewed"
+                      size="small"
+                      disabled
+                    >
+                      已评价
+                    </el-button>
                   </div>
                 </div>
               </el-col>
@@ -181,6 +211,18 @@
       :my-role="disputeTask._myRole"
       @success="handleDisputeSuccess"
     />
+
+    <!-- 评价对话框 -->
+    <review-dialog
+      v-if="reviewTask"
+      :visible.sync="showReviewDialog"
+      :task-id="reviewTask.taskId"
+      :task-title="reviewTask.title"
+      :reviewee-user-id="reviewTask._revieweeUserId"
+      :reviewee-user-name="reviewTask._revieweeUserName"
+      :my-role="reviewTask._myRole"
+      @success="handleReviewSuccess"
+    />
   </div>
 </template>
 
@@ -188,13 +230,15 @@
 import { listMyPublished, listMyTaken, listMyReviews, delTask, completeTask, confirmTask } from '@/api/task/task'
 import TaskDetailDialog from '@/views/task-square/components/TaskDetailDialog.vue'
 import CreateDisputeDialog from '@/views/task-square/components/CreateDisputeDialog.vue'
+import ReviewDialog from '@/views/task-square/components/ReviewDialog.vue'
 import { formatTime, formatDateTime } from '@/utils/datetime'
 
 export default {
   name: 'UserTasks',
   components: {
     TaskDetailDialog,
-    CreateDisputeDialog
+    CreateDisputeDialog,
+    ReviewDialog
   },
   data() {
     return {
@@ -206,7 +250,9 @@ export default {
       showDetailDialog: false,
       selectedTaskId: null,
       showDisputeDialog: false,
-      disputeTask: null
+      disputeTask: null,
+      showReviewDialog: false,
+      reviewTask: null
     }
   },
   mounted() {
@@ -324,6 +370,21 @@ export default {
           this.loadTakenTasks()
         })
       }).catch(() => {})
+    },
+    handleReviewTask(task) {
+      const currentUserId = this.$store.state.user.id
+      const isPublisher = String(currentUserId) === String(task.userId)
+      task._myRole = isPublisher ? 'publisher' : 'taker'
+      task._revieweeUserId = isPublisher ? task.takerId : task.userId
+      task._revieweeUserName = isPublisher ? task.takerName : task.userName
+      this.reviewTask = task
+      this.showReviewDialog = true
+    },
+    handleReviewSuccess() {
+      this.$message.success('评价成功')
+      this.showReviewDialog = false
+      this.loadPublishedTasks()
+      this.loadTakenTasks()
     }
   }
 }

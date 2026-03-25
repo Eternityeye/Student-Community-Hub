@@ -174,6 +174,7 @@ export default {
         reasons: [],
         description: ''
       }
+      this.hasReported = false
       this.$refs.form && this.$refs.form.resetFields()
       this.$emit('update:visible', false)
     }

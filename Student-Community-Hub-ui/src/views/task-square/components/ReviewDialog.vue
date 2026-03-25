@@ -1,23 +1,35 @@
 <template>
   <el-dialog
-    title="提交评价"
+    title="任务评价"
     :visible.sync="visible"
-    width="500px"
+    width="600px"
     @close="handleClose"
     append-to-body
   >
-    <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-      <el-form-item label="评分" prop="rating">
-        <el-rate v-model="form.rating" :max="5" allow-half />
+    <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+      <!-- 任务信息（只读） -->
+      <el-form-item label="任务">
+        <span>{{ taskTitle }}</span>
       </el-form-item>
 
+      <!-- 被评价人（只读） -->
+      <el-form-item label="被评价人">
+        <span>{{ revieweeUserName }}</span>
+      </el-form-item>
+
+      <!-- 星级评分 -->
+      <el-form-item label="评分" prop="rating">
+        <el-rate v-model="form.rating" :max="5" allow-half show-text text-color="#ff9900" />
+      </el-form-item>
+
+      <!-- 评价内容 -->
       <el-form-item label="评价内容" prop="content">
         <el-input
           v-model="form.content"
           type="textarea"
           :rows="4"
-          placeholder="请输入评价内容（可选）"
-          maxlength="200"
+          placeholder="请输入您的评价（可选）"
+          maxlength="500"
           show-word-limit
         />
       </el-form-item>
@@ -36,31 +48,30 @@ import { addReview } from '@/api/task/task'
 export default {
   name: 'ReviewDialog',
   props: {
-    value: {
-      type: Boolean,
-      default: false
-    },
+    visible: Boolean,
     taskId: {
       type: [String, Number],
       required: true
     },
-    revieweeId: {
+    taskTitle: String,
+    revieweeUserId: {
       type: [String, Number],
       default: null
     },
-    roleType: {
+    revieweeUserName: String,
+    myRole: {
       type: String,
-      required: true
+      default: 'publisher'
     }
   },
   data() {
     return {
       form: {
         taskId: this.taskId,
-        revieweeId: this.revieweeId,
-        roleType: this.roleType,
+        revieweeId: this.revieweeUserId,
         rating: 5,
-        content: ''
+        content: '',
+        roleType: this.myRole === 'publisher' ? '0' : '1'
       },
       rules: {
         rating: [{ required: true, message: '请选择评分', trigger: 'change' }]
@@ -68,25 +79,15 @@ export default {
       submitting: false
     }
   },
-  computed: {
-    visible: {
-      get() {
-        return this.value
-      },
-      set(val) {
-        this.$emit('input', val)
-      }
-    }
-  },
   watch: {
     taskId(newVal) {
       this.form.taskId = newVal
     },
-    revieweeId(newVal) {
+    revieweeUserId(newVal) {
       this.form.revieweeId = newVal
     },
-    roleType(newVal) {
-      this.form.roleType = newVal
+    myRole(newVal) {
+      this.form.roleType = newVal === 'publisher' ? '0' : '1'
     }
   },
   methods: {
@@ -95,9 +96,13 @@ export default {
         if (!valid) return
 
         this.submitting = true
-        addReview(this.form).then(() => {
+        const submitData = {
+          ...this.form,
+          roleType: this.myRole === 'publisher' ? '0' : '1'
+        }
+        addReview(submitData).then(() => {
           this.$message.success('评价提交成功')
-          this.$emit('review-submitted')
+          this.$emit('success')
           this.handleClose()
         }).finally(() => {
           this.submitting = false
@@ -105,14 +110,14 @@ export default {
       })
     },
     handleClose() {
-      this.visible = false
+      this.$emit('update:visible', false)
       this.$refs.form.resetFields()
       this.form = {
         taskId: this.taskId,
-        revieweeId: this.revieweeId,
-        roleType: this.roleType,
+        revieweeId: this.revieweeUserId,
         rating: 5,
-        content: ''
+        content: '',
+        roleType: this.myRole === 'publisher' ? '0' : '1'
       }
     }
   }
@@ -120,11 +125,4 @@ export default {
 </script>
 
 <style scoped>
-.el-form {
-  padding: 20px 0;
-}
-
-.dialog-footer {
-  text-align: right;
-}
 </style>

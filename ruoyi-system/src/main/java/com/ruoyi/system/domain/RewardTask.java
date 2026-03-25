@@ -9,6 +9,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.config.StringToListDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.system.domain.TaskReview;
 
 /**
  * 悬赏任务 reward_task
@@ -71,6 +72,9 @@ public class RewardTask extends BaseEntity
 
     /** 我的评价（非数据库字段） */
     private transient List<TaskReview> myReviews;
+
+    /** 是否已评价（非数据库字段） */
+    private transient Boolean isReviewed;
 
     public Long getTaskId() {
         return taskId;
@@ -206,6 +210,14 @@ public class RewardTask extends BaseEntity
 
     public void setMyReviews(List<TaskReview> myReviews) {
         this.myReviews = myReviews;
+    }
+
+    public Boolean getIsReviewed() {
+        return isReviewed;
+    }
+
+    public void setIsReviewed(Boolean isReviewed) {
+        this.isReviewed = isReviewed;
     }
 
     @Override

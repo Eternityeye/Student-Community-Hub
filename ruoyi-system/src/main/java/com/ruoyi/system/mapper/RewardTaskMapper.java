@@ -3,6 +3,7 @@ package com.ruoyi.system.mapper;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import com.ruoyi.system.domain.RewardTask;
+import com.ruoyi.system.domain.TaskReview;
 
 /**
  * 悬赏任务 数据层
@@ -75,4 +76,13 @@ public interface RewardTaskMapper
      * @return 任务列表
      */
     public List<RewardTask> selectTasksByTaker(@Param("takerId") Long takerId);
+
+    /**
+     * 查询用户对任务的评价
+     *
+     * @param taskId 任务ID
+     * @param reviewerId 评价者ID
+     * @return 评价信息
+     */
+    public List<TaskReview> selectReviewByTaskAndReviewer(@Param("taskId") Long taskId, @Param("reviewerId") Long reviewerId);
 }

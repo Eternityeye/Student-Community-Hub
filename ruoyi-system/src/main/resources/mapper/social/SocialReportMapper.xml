@@ -45,6 +45,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectReportList" parameterType="SocialReport" resultMap="SocialReportResult">
         <include refid="selectReportVo" />
         <where>
+            <if test="userId != null">
+                and sr.user_id = #{userId}
+            </if>
+            <if test="postId != null">
+                and sr.post_id = #{postId}
+            </if>
             <if test="status != null and status != ''">
                 and sr.status = #{status}
             </if>

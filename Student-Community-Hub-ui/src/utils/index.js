@@ -21,12 +21,16 @@ export function formatDate(cellValue) {
  * @returns {string}
  */
 export function formatTime(time, option) {
+  if (!time) return ''
   if (('' + time).length === 10) {
     time = parseInt(time) * 1000
   } else {
     time = +time
   }
   const d = new Date(time)
+  if (isNaN(d.getTime())) {
+    return ''
+  }
   const now = Date.now()
 
   const diff = (now - d) / 1000
@@ -44,17 +48,11 @@ export function formatTime(time, option) {
   if (option) {
     return parseTime(time, option)
   } else {
-    return (
-      d.getMonth() +
-      1 +
-      '月' +
-      d.getDate() +
-      '日' +
-      d.getHours() +
-      '时' +
-      d.getMinutes() +
-      '分'
-    )
+    const month = d.getMonth() + 1
+    const date = d.getDate()
+    const hours = d.getHours()
+    const minutes = d.getMinutes()
+    return month + '月' + date + '日' + hours + '时' + minutes + '分'
   }
 }
 

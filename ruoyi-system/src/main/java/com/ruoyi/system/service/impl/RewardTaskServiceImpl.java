@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.system.domain.RewardTask;
+import com.ruoyi.system.domain.TaskReview;
 import com.ruoyi.system.mapper.RewardTaskMapper;
 import com.ruoyi.system.service.IRewardTaskService;
 
@@ -169,6 +170,48 @@ public class RewardTaskServiceImpl implements IRewardTaskService
             convertStringToList(t);
         }
         return list;
+    }
+
+    /**
+     * 获取用户发布的任务列表（带评价状态）
+     */
+    @Override
+    public List<RewardTask> selectTasksByPublisherWithReview(Long userId, Long currentUserId)
+    {
+        List<RewardTask> list = selectTasksByPublisher(userId);
+        loadReviewStatus(list, currentUserId);
+        return list;
+    }
+
+    /**
+     * 获取用户接单的任务列表（带评价状态）
+     */
+    @Override
+    public List<RewardTask> selectTasksByTakerWithReview(Long takerId, Long currentUserId)
+    {
+        List<RewardTask> list = selectTasksByTaker(takerId);
+        loadReviewStatus(list, currentUserId);
+        return list;
+    }
+
+    /**
+     * 加载评价状态（判断当前用户是否已对任务评价）
+     */
+    private void loadReviewStatus(List<RewardTask> tasks, Long currentUserId)
+    {
+        if (tasks == null || tasks.isEmpty() || currentUserId == null) {
+            return;
+        }
+
+        for (RewardTask task : tasks) {
+            // 只在任务已完成(status='3')时检查评价状态
+            if ("3".equals(task.getStatus())) {
+                List<TaskReview> reviews = rewardTaskMapper.selectReviewByTaskAndReviewer(task.getTaskId(), currentUserId);
+                task.setIsReviewed(!reviews.isEmpty());
+            } else {
+                task.setIsReviewed(false);
+            }
+        }
     }
 
     /**

@@ -55,7 +55,7 @@ public class RewardTaskController extends BaseController
     {
         startPage();
         Long userId = SecurityUtils.getUserId();
-        List<RewardTask> list = rewardTaskService.selectTasksByPublisher(userId);
+        List<RewardTask> list = rewardTaskService.selectTasksByPublisherWithReview(userId, userId);
         return getDataTable(list);
     }
 
@@ -67,7 +67,7 @@ public class RewardTaskController extends BaseController
     {
         startPage();
         Long userId = SecurityUtils.getUserId();
-        List<RewardTask> list = rewardTaskService.selectTasksByTaker(userId);
+        List<RewardTask> list = rewardTaskService.selectTasksByTakerWithReview(userId, userId);
         return getDataTable(list);
     }
 

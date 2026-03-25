@@ -90,4 +90,22 @@ public interface IRewardTaskService
      * @return 任务列表
      */
     public List<RewardTask> selectTasksByTaker(Long takerId);
+
+    /**
+     * 获取用户发布的任务列表（带评价状态）
+     *
+     * @param userId 用户ID
+     * @param currentUserId 当前用户ID（用于判断是否已评价）
+     * @return 任务列表
+     */
+    public List<RewardTask> selectTasksByPublisherWithReview(Long userId, Long currentUserId);
+
+    /**
+     * 获取用户接单的任务列表（带评价状态）
+     *
+     * @param takerId 接单者ID
+     * @param currentUserId 当前用户ID（用于判断是否已评价）
+     * @return 任务列表
+     */
+    public List<RewardTask> selectTasksByTakerWithReview(Long takerId, Long currentUserId);
 }
